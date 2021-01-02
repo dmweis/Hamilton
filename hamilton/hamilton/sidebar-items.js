@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["hamilton_remote_client","Generated client implementations."],["hamilton_remote_server","Generated server implementations."]],"struct":[["MoveCommand",""],["MoveRequest",""],["MoveResponse",""]]});

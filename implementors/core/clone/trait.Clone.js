@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["hamilton"] = [{"text":"impl Clone for MoveCommand","synthetic":false,"types":[]},{"text":"impl Clone for MoveRequest","synthetic":false,"types":[]},{"text":"impl Clone for MoveResponse","synthetic":false,"types":[]},{"text":"impl&lt;T:&nbsp;Clone&gt; Clone for HamiltonRemoteClient&lt;T&gt;","synthetic":false,"types":[]},{"text":"impl&lt;T:&nbsp;HamiltonRemote&gt; Clone for HamiltonRemoteServer&lt;T&gt;","synthetic":false,"types":[]},{"text":"impl&lt;T:&nbsp;HamiltonRemote&gt; Clone for _Inner&lt;T&gt;","synthetic":false,"types":[]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
