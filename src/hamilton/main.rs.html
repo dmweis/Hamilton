@@ -161,6 +161,9 @@
 <span id="158">158</span>
 <span id="159">159</span>
 <span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">driver</span>;
 <span class="kw">mod</span> <span class="ident">holonomic_controller</span>;
@@ -238,6 +241,9 @@
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">driver</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">HamiltonDriver</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">if</span> <span class="op">!</span><span class="ident">args</span>.<span class="ident">use_stepper</span> {
         <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">driver</span>::<span class="ident">lss_driver</span>::<span class="ident">HamiltonLssDriver</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">port</span>).<span class="ident">await</span><span class="question-mark">?</span>)
     } <span class="kw">else</span> {
+        <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">target_family</span> <span class="op">=</span> <span class="string">&quot;windows&quot;</span>)]</span>
+        <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Stepper driver not supported on windows&quot;</span>);
+        <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_family</span> <span class="op">=</span> <span class="string">&quot;windows&quot;</span>))]</span>
         <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">driver</span>::<span class="ident">stepper_driver</span>::<span class="ident">HamiltonStepperDriver</span>::<span class="ident">new</span>(
             <span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">port</span>,
         )<span class="question-mark">?</span>)
