@@ -164,6 +164,7 @@
 <span id="161">161</span>
 <span id="162">162</span>
 <span id="163">163</span>
+<span id="164">164</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">driver</span>;
 <span class="kw">mod</span> <span class="ident">holonomic_controller</span>;
@@ -173,8 +174,9 @@
 <span class="kw">use</span> <span class="ident">hamilton</span>::<span class="ident">hamilton_remote_server</span>::{<span class="ident">HamiltonRemote</span>, <span class="ident">HamiltonRemoteServer</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">time</span>::<span class="ident">Duration</span>;
+<span class="kw">use</span> <span class="ident">tokio</span>;
 <span class="kw">use</span> <span class="ident">tokio</span>::<span class="ident">sync</span>::<span class="ident">Mutex</span>;
-<span class="kw">use</span> <span class="ident">tokio</span>::<span class="ident">time</span>::<span class="ident">delay_for</span>;
+<span class="kw">use</span> <span class="ident">tokio</span>::<span class="ident">time</span>::<span class="ident">sleep</span>;
 <span class="kw">use</span> <span class="ident">tonic</span>::{<span class="ident">transport</span>::<span class="ident">Server</span>, <span class="ident">Request</span>, <span class="ident">Response</span>, <span class="ident">Status</span>, <span class="ident">Streaming</span>};
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">hamilton</span> {
@@ -258,27 +260,27 @@
         <span class="ident">driver</span>
             .<span class="ident">send</span>(<span class="ident">mapping</span>.<span class="ident">apply_commands_by_mapping</span>(<span class="kw-2">&amp;</span><span class="ident">command</span>))
             .<span class="ident">await</span><span class="question-mark">?</span>;
-        <span class="ident">delay_for</span>(<span class="ident">Duration</span>::<span class="ident">from_secs_f32</span>(<span class="number">2.</span>)).<span class="ident">await</span>;
+        <span class="ident">sleep</span>(<span class="ident">Duration</span>::<span class="ident">from_secs_f32</span>(<span class="number">2.</span>)).<span class="ident">await</span>;
         <span class="kw">let</span> <span class="ident">command</span> <span class="op">=</span> <span class="ident">holonomic_controller</span>::<span class="ident">HolonomicWheelCommand</span>::<span class="ident">new</span>(<span class="number">0.0</span>, <span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
         <span class="ident">driver</span>
             .<span class="ident">send</span>(<span class="ident">mapping</span>.<span class="ident">apply_commands_by_mapping</span>(<span class="kw-2">&amp;</span><span class="ident">command</span>))
             .<span class="ident">await</span><span class="question-mark">?</span>;
-        <span class="ident">delay_for</span>(<span class="ident">Duration</span>::<span class="ident">from_secs_f32</span>(<span class="number">2.</span>)).<span class="ident">await</span>;
+        <span class="ident">sleep</span>(<span class="ident">Duration</span>::<span class="ident">from_secs_f32</span>(<span class="number">2.</span>)).<span class="ident">await</span>;
         <span class="kw">let</span> <span class="ident">command</span> <span class="op">=</span> <span class="ident">holonomic_controller</span>::<span class="ident">HolonomicWheelCommand</span>::<span class="ident">new</span>(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">1.0</span>, <span class="number">0.0</span>);
         <span class="ident">driver</span>
             .<span class="ident">send</span>(<span class="ident">mapping</span>.<span class="ident">apply_commands_by_mapping</span>(<span class="kw-2">&amp;</span><span class="ident">command</span>))
             .<span class="ident">await</span><span class="question-mark">?</span>;
-        <span class="ident">delay_for</span>(<span class="ident">Duration</span>::<span class="ident">from_secs_f32</span>(<span class="number">2.</span>)).<span class="ident">await</span>;
+        <span class="ident">sleep</span>(<span class="ident">Duration</span>::<span class="ident">from_secs_f32</span>(<span class="number">2.</span>)).<span class="ident">await</span>;
         <span class="kw">let</span> <span class="ident">command</span> <span class="op">=</span> <span class="ident">holonomic_controller</span>::<span class="ident">HolonomicWheelCommand</span>::<span class="ident">new</span>(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">1.0</span>);
         <span class="ident">driver</span>
             .<span class="ident">send</span>(<span class="ident">mapping</span>.<span class="ident">apply_commands_by_mapping</span>(<span class="kw-2">&amp;</span><span class="ident">command</span>))
             .<span class="ident">await</span><span class="question-mark">?</span>;
-        <span class="ident">delay_for</span>(<span class="ident">Duration</span>::<span class="ident">from_secs_f32</span>(<span class="number">2.</span>)).<span class="ident">await</span>;
+        <span class="ident">sleep</span>(<span class="ident">Duration</span>::<span class="ident">from_secs_f32</span>(<span class="number">2.</span>)).<span class="ident">await</span>;
         <span class="kw">let</span> <span class="ident">command</span> <span class="op">=</span> <span class="ident">holonomic_controller</span>::<span class="ident">HolonomicWheelCommand</span>::<span class="ident">new</span>(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
         <span class="ident">driver</span>
             .<span class="ident">send</span>(<span class="ident">mapping</span>.<span class="ident">apply_commands_by_mapping</span>(<span class="kw-2">&amp;</span><span class="ident">command</span>))
             .<span class="ident">await</span><span class="question-mark">?</span>;
-        <span class="ident">delay_for</span>(<span class="ident">Duration</span>::<span class="ident">from_secs_f32</span>(<span class="number">1.</span>)).<span class="ident">await</span>;
+        <span class="ident">sleep</span>(<span class="ident">Duration</span>::<span class="ident">from_secs_f32</span>(<span class="number">1.</span>)).<span class="ident">await</span>;
         <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
     }
     <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">move_test</span> {
@@ -294,7 +296,7 @@
             .<span class="ident">send</span>(<span class="ident">mapped_move_command</span>)
             .<span class="ident">await</span>
             .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">Status</span>::<span class="ident">internal</span>(<span class="string">&quot;Failed to send message over serial port&quot;</span>))<span class="question-mark">?</span>;
-        <span class="ident">delay_for</span>(<span class="ident">Duration</span>::<span class="ident">from_secs_f32</span>(<span class="number">1.5</span>)).<span class="ident">await</span>;
+        <span class="ident">sleep</span>(<span class="ident">Duration</span>::<span class="ident">from_secs_f32</span>(<span class="number">1.5</span>)).<span class="ident">await</span>;
         <span class="kw">let</span> <span class="ident">mapped_move_command</span> <span class="op">=</span> <span class="ident">mapping</span>.<span class="ident">apply_commands_by_mapping</span>(
             <span class="kw-2">&amp;</span><span class="ident">hamilton</span>::<span class="ident">MoveCommand</span> {
                 <span class="ident">x</span>: <span class="op">-</span><span class="number">0.25</span>,
@@ -307,12 +309,12 @@
             .<span class="ident">send</span>(<span class="ident">mapped_move_command</span>)
             .<span class="ident">await</span>
             .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">Status</span>::<span class="ident">internal</span>(<span class="string">&quot;Failed to send message over serial port&quot;</span>))<span class="question-mark">?</span>;
-        <span class="ident">delay_for</span>(<span class="ident">Duration</span>::<span class="ident">from_secs_f32</span>(<span class="number">1.5</span>)).<span class="ident">await</span>;
+        <span class="ident">sleep</span>(<span class="ident">Duration</span>::<span class="ident">from_secs_f32</span>(<span class="number">1.5</span>)).<span class="ident">await</span>;
         <span class="kw">let</span> <span class="ident">command</span> <span class="op">=</span> <span class="ident">holonomic_controller</span>::<span class="ident">HolonomicWheelCommand</span>::<span class="ident">new</span>(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
         <span class="ident">driver</span>
             .<span class="ident">send</span>(<span class="ident">mapping</span>.<span class="ident">apply_commands_by_mapping</span>(<span class="kw-2">&amp;</span><span class="ident">command</span>))
             .<span class="ident">await</span><span class="question-mark">?</span>;
-        <span class="ident">delay_for</span>(<span class="ident">Duration</span>::<span class="ident">from_secs_f32</span>(<span class="number">1.</span>)).<span class="ident">await</span>;
+        <span class="ident">sleep</span>(<span class="ident">Duration</span>::<span class="ident">from_secs_f32</span>(<span class="number">1.</span>)).<span class="ident">await</span>;
         <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
     }
 
