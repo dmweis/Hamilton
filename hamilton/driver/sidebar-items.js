@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["hamilton_lss_driver",""]],"struct":[["WireMoveCommand",""]],"trait":[["HamiltonDriver",""]]});
+initSidebarItems({"mod":[["hamilton_lss_driver",""]],"struct":[["WireMoveCommand",""]]});

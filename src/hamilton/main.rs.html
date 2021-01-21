@@ -185,13 +185,12 @@
 <span id="182">182</span>
 <span id="183">183</span>
 <span id="184">184</span>
-<span id="185">185</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">driver</span>;
 <span class="kw">mod</span> <span class="ident">holonomic_controller</span>;
 <span class="kw">use</span> <span class="ident">anyhow</span>::<span class="prelude-ty">Result</span>;
 <span class="kw">use</span> <span class="ident">clap</span>::<span class="ident">Clap</span>;
-<span class="kw">use</span> <span class="ident">driver</span>::<span class="ident">HamiltonDriver</span>;
+<span class="kw">use</span> <span class="ident">driver</span>::<span class="ident">HamiltonLssDriver</span>;
 <span class="kw">use</span> <span class="ident">hamilton</span>::<span class="ident">hamilton_remote_server</span>::{<span class="ident">HamiltonRemote</span>, <span class="ident">HamiltonRemoteServer</span>};
 <span class="kw">use</span> <span class="ident">holonomic_controller</span>::<span class="ident">MotorMapping</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
@@ -206,7 +205,7 @@
 }
 
 <span class="kw">struct</span> <span class="ident">HamiltonRemoteController</span> {
-    <span class="ident">driver</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">driver</span>::<span class="ident">HamiltonDriver</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">driver</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">HamiltonLssDriver</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">motor_mapping</span>: <span class="ident">holonomic_controller</span>::<span class="ident">MotorMapping</span>,
 }
 
@@ -234,7 +233,7 @@
 
 <span class="kw">impl</span> <span class="ident">HamiltonRemoteController</span> {
     <span class="kw">fn</span> <span class="ident">new</span>(
-        <span class="ident">driver</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">driver</span>::<span class="ident">HamiltonDriver</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">driver</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">HamiltonLssDriver</span><span class="op">&gt;</span><span class="op">&gt;</span>,
         <span class="ident">controller_config</span>: <span class="ident">holonomic_controller</span>::<span class="ident">MotorMapping</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="ident">HamiltonRemoteController</span> {
@@ -260,8 +259,7 @@
 <span class="attribute">#[<span class="ident">tokio</span>::<span class="ident">main</span>]</span>
 <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">main</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">Args</span>::<span class="ident">parse</span>();
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">driver</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">HamiltonDriver</span><span class="op">&gt;</span> <span class="op">=</span>
-        <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">driver</span>::<span class="ident">hamilton_lss_driver</span>::<span class="ident">HamiltonLssDriver</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">port</span>).<span class="ident">await</span><span class="question-mark">?</span>);
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">driver</span> <span class="op">=</span> <span class="ident">driver</span>::<span class="ident">hamilton_lss_driver</span>::<span class="ident">HamiltonLssDriver</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">port</span>).<span class="ident">await</span><span class="question-mark">?</span>;
 
     <span class="kw">let</span> <span class="ident">mapping</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">path</span>) <span class="op">=</span> <span class="ident">args</span>.<span class="ident">config</span> {
         <span class="ident">holonomic_controller</span>::<span class="ident">MotorMapping</span>::<span class="ident">load</span>(<span class="kw-2">&amp;</span><span class="ident">path</span>)<span class="question-mark">?</span>
@@ -285,7 +283,7 @@
         <span class="kw">loop</span> {
             <span class="ident">reading_rate</span>.<span class="ident">tick</span>().<span class="ident">await</span>;
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">driver</span> <span class="op">=</span> <span class="ident">shared_driver</span>.<span class="ident">lock</span>().<span class="ident">await</span>;
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">voltage</span>)) <span class="op">=</span> <span class="ident">driver</span>.<span class="ident">read_voltage</span>().<span class="ident">await</span> {
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">voltage</span>) <span class="op">=</span> <span class="ident">driver</span>.<span class="ident">read_voltage</span>().<span class="ident">await</span> {
                 <span class="kw">let</span> <span class="ident">color</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">voltage</span> <span class="op">&lt;</span> <span class="number">3.0</span> <span class="op">*</span> <span class="number">3.6</span> {
                     <span class="ident">lss_driver</span>::<span class="ident">LedColor</span>::<span class="ident">Red</span>
                 } <span class="kw">else</span> {
@@ -309,7 +307,7 @@
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="ident">async</span> <span class="kw">fn</span> <span class="ident">wheels_test</span>(<span class="ident">driver</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">HamiltonDriver</span><span class="op">&gt;</span>, <span class="ident">mapping</span>: <span class="kw-2">&amp;</span><span class="ident">MotorMapping</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+<span class="ident">async</span> <span class="kw">fn</span> <span class="ident">wheels_test</span>(<span class="ident">driver</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">HamiltonLssDriver</span>, <span class="ident">mapping</span>: <span class="kw-2">&amp;</span><span class="ident">MotorMapping</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">command</span> <span class="op">=</span> <span class="ident">holonomic_controller</span>::<span class="ident">HolonomicWheelCommand</span>::<span class="ident">new</span>(<span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>);
     <span class="ident">driver</span>
         .<span class="ident">send</span>(<span class="ident">mapping</span>.<span class="ident">apply_commands_by_mapping</span>(<span class="kw-2">&amp;</span><span class="ident">command</span>))
@@ -338,7 +336,7 @@
     <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
 }
 
-<span class="ident">async</span> <span class="kw">fn</span> <span class="ident">move_test</span>(<span class="ident">driver</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">HamiltonDriver</span><span class="op">&gt;</span>, <span class="ident">mapping</span>: <span class="kw-2">&amp;</span><span class="ident">MotorMapping</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+<span class="ident">async</span> <span class="kw">fn</span> <span class="ident">move_test</span>(<span class="ident">driver</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">HamiltonLssDriver</span>, <span class="ident">mapping</span>: <span class="kw-2">&amp;</span><span class="ident">MotorMapping</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">mapped_move_command</span> <span class="op">=</span> <span class="ident">mapping</span>.<span class="ident">apply_commands_by_mapping</span>(
         <span class="kw-2">&amp;</span><span class="ident">hamilton</span>::<span class="ident">MoveCommand</span> {
             <span class="ident">x</span>: <span class="number">0.25</span>,
