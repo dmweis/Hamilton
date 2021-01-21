@@ -21,32 +21,12 @@
 <span id="18">18</span>
 <span id="19">19</span>
 <span id="20">20</span>
-<span id="21">21</span>
-<span id="22">22</span>
-<span id="23">23</span>
-<span id="24">24</span>
-<span id="25">25</span>
-<span id="26">26</span>
-<span id="27">27</span>
-<span id="28">28</span>
-<span id="29">29</span>
-<span id="30">30</span>
-<span id="31">31</span>
-<span id="32">32</span>
-<span id="33">33</span>
-<span id="34">34</span>
-<span id="35">35</span>
-<span id="36">36</span>
-<span id="37">37</span>
-<span id="38">38</span>
-<span id="39">39</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">lss_driver</span>;
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_family</span> <span class="op">=</span> <span class="string">&quot;windows&quot;</span>))]</span>
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">stepper_driver</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">hamilton_lss_driver</span>;
 
 <span class="kw">use</span> <span class="ident">anyhow</span>::<span class="prelude-ty">Result</span>;
 <span class="kw">use</span> <span class="ident">async_trait</span>::<span class="ident">async_trait</span>;
+<span class="kw">use</span> <span class="ident">lss_driver</span>::<span class="ident">LedColor</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WireMoveCommand</span> {
@@ -56,29 +36,11 @@
     <span class="kw">pub</span> <span class="ident">wheel_d</span>: <span class="ident">f32</span>,
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_family</span> <span class="op">=</span> <span class="string">&quot;windows&quot;</span>))]</span>
-<span class="kw">impl</span> <span class="ident">WireMoveCommand</span> {
-    <span class="kw">fn</span> <span class="ident">encode</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
-        <span class="comment">// push wheels in the weird format that I chose for some reason</span>
-        <span class="ident">buffer</span>.<span class="ident">push</span>((<span class="self">self</span>.<span class="ident">wheel_a</span> <span class="op">&gt;</span> <span class="number">0.0</span>) <span class="kw">as</span> <span class="ident">u8</span>);
-        <span class="ident">buffer</span>.<span class="ident">push</span>(<span class="self">self</span>.<span class="ident">wheel_a</span>.<span class="ident">abs</span>() <span class="kw">as</span> <span class="ident">u8</span>);
-        <span class="ident">buffer</span>.<span class="ident">push</span>((<span class="self">self</span>.<span class="ident">wheel_b</span> <span class="op">&gt;</span> <span class="number">0.0</span>) <span class="kw">as</span> <span class="ident">u8</span>);
-        <span class="ident">buffer</span>.<span class="ident">push</span>(<span class="self">self</span>.<span class="ident">wheel_b</span>.<span class="ident">abs</span>() <span class="kw">as</span> <span class="ident">u8</span>);
-        <span class="ident">buffer</span>.<span class="ident">push</span>((<span class="self">self</span>.<span class="ident">wheel_c</span> <span class="op">&gt;</span> <span class="number">0.0</span>) <span class="kw">as</span> <span class="ident">u8</span>);
-        <span class="ident">buffer</span>.<span class="ident">push</span>(<span class="self">self</span>.<span class="ident">wheel_c</span>.<span class="ident">abs</span>() <span class="kw">as</span> <span class="ident">u8</span>);
-        <span class="ident">buffer</span>.<span class="ident">push</span>((<span class="self">self</span>.<span class="ident">wheel_d</span> <span class="op">&gt;</span> <span class="number">0.0</span>) <span class="kw">as</span> <span class="ident">u8</span>);
-        <span class="ident">buffer</span>.<span class="ident">push</span>(<span class="self">self</span>.<span class="ident">wheel_d</span>.<span class="ident">abs</span>() <span class="kw">as</span> <span class="ident">u8</span>);
-
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">encoded</span> <span class="op">=</span> <span class="ident">postcard_cobs</span>::<span class="ident">encode_vec</span>(<span class="kw-2">&amp;</span><span class="ident">buffer</span>);
-        <span class="ident">encoded</span>.<span class="ident">push</span>(<span class="number">0</span>);
-        <span class="ident">encoded</span>
-    }
-}
-
 <span class="attribute">#[<span class="ident">async_trait</span>]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">HamiltonDriver</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> {
     <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">command</span>: <span class="ident">WireMoveCommand</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
+    <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">read_voltage</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+    <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">set_color</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">color</span>: <span class="ident">LedColor</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "hamilton";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
