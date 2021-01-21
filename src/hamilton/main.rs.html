@@ -185,6 +185,13 @@
 <span id="182">182</span>
 <span id="183">183</span>
 <span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">driver</span>;
 <span class="kw">mod</span> <span class="ident">holonomic_controller</span>;
@@ -199,6 +206,8 @@
 <span class="kw">use</span> <span class="ident">tokio</span>::<span class="ident">time</span>::{<span class="ident">interval</span>, <span class="ident">sleep</span>};
 <span class="kw">use</span> <span class="ident">tokio</span>::{<span class="self">self</span>, <span class="ident">spawn</span>};
 <span class="kw">use</span> <span class="ident">tonic</span>::{<span class="ident">transport</span>::<span class="ident">Server</span>, <span class="ident">Request</span>, <span class="ident">Response</span>, <span class="ident">Status</span>, <span class="ident">Streaming</span>};
+<span class="kw">use</span> <span class="ident">tracing</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">tracing_subscriber</span>::<span class="ident">filter</span>::<span class="ident">LevelFilter</span>;
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">hamilton</span> {
     <span class="ident">tonic</span>::<span class="macro">include_proto</span><span class="macro">!</span>(<span class="string">&quot;hamilton&quot;</span>);
@@ -246,7 +255,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clap</span>)]</span>
 <span class="attribute">#[<span class="ident">clap</span>()]</span>
 <span class="kw">struct</span> <span class="ident">Args</span> {
-    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Serial port to use&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Serial port to use&quot;</span>, <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;somehting&quot;</span>)]</span>
     <span class="ident">port</span>: <span class="ident">String</span>,
     <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;test&quot;</span>, <span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;test wheels&quot;</span>)]</span>
     <span class="ident">test</span>: <span class="ident">bool</span>,
@@ -259,6 +268,10 @@
 <span class="attribute">#[<span class="ident">tokio</span>::<span class="ident">main</span>]</span>
 <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">main</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">Args</span>::<span class="ident">parse</span>();
+    <span class="ident">tracing_subscriber</span>::<span class="ident">fmt</span>()
+        .<span class="ident">pretty</span>()
+        .<span class="ident">with_max_level</span>(<span class="ident">LevelFilter</span>::<span class="ident">TRACE</span>)
+        .<span class="ident">init</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">driver</span> <span class="op">=</span> <span class="ident">driver</span>::<span class="ident">hamilton_lss_driver</span>::<span class="ident">HamiltonLssDriver</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">port</span>).<span class="ident">await</span><span class="question-mark">?</span>;
 
     <span class="kw">let</span> <span class="ident">mapping</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">path</span>) <span class="op">=</span> <span class="ident">args</span>.<span class="ident">config</span> {
@@ -284,20 +297,21 @@
             <span class="ident">reading_rate</span>.<span class="ident">tick</span>().<span class="ident">await</span>;
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">driver</span> <span class="op">=</span> <span class="ident">shared_driver</span>.<span class="ident">lock</span>().<span class="ident">await</span>;
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">voltage</span>) <span class="op">=</span> <span class="ident">driver</span>.<span class="ident">read_voltage</span>().<span class="ident">await</span> {
+                <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Current voltage is {}&quot;</span>, <span class="ident">voltage</span>);
                 <span class="kw">let</span> <span class="ident">color</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">voltage</span> <span class="op">&lt;</span> <span class="number">3.0</span> <span class="op">*</span> <span class="number">3.6</span> {
                     <span class="ident">lss_driver</span>::<span class="ident">LedColor</span>::<span class="ident">Red</span>
                 } <span class="kw">else</span> {
                     <span class="ident">lss_driver</span>::<span class="ident">LedColor</span>::<span class="ident">Magenta</span>
                 };
                 <span class="kw">if</span> <span class="ident">driver</span>.<span class="ident">set_color</span>(<span class="ident">color</span>).<span class="ident">await</span>.<span class="ident">is_err</span>() {
-                    <span class="macro">eprintln</span><span class="macro">!</span>(<span class="string">&quot;Failed to set color&quot;</span>);
+                    <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Failed to set color&quot;</span>);
                 }
             } <span class="kw">else</span> {
-                <span class="macro">eprintln</span><span class="macro">!</span>(<span class="string">&quot;Failed to read voltage&quot;</span>);
+                <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Failed to read voltage&quot;</span>);
             }
         }
     });
-    <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;Hamilton remote started at {}&quot;</span>, <span class="ident">address</span>);
+    <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Hamilton remote started at {}&quot;</span>, <span class="ident">address</span>);
 
     <span class="ident">Server</span>::<span class="ident">builder</span>()
         .<span class="ident">add_service</span>(<span class="ident">HamiltonRemoteServer</span>::<span class="ident">new</span>(<span class="ident">hamilton_remote</span>))
