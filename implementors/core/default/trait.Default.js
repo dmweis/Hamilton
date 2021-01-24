@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["hamilton"] = [{"text":"impl Default for WireMoveCommand","synthetic":false,"types":[]},{"text":"impl Default for MotorMapping","synthetic":false,"types":[]},{"text":"impl Default for MoveCommand","synthetic":false,"types":[]},{"text":"impl Default for MoveRequest","synthetic":false,"types":[]},{"text":"impl Default for MoveResponse","synthetic":false,"types":[]}];
+implementors["hamilton"] = [{"text":"impl Default for MotorConfig","synthetic":false,"types":[]},{"text":"impl Default for BodyConfig","synthetic":false,"types":[]},{"text":"impl Default for MoveCommand","synthetic":false,"types":[]},{"text":"impl Default for MoveRequest","synthetic":false,"types":[]},{"text":"impl Default for MoveResponse","synthetic":false,"types":[]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["HamiltonLssDriver",""]]});
+initSidebarItems({"struct":[["BodyConfig",""],["HamiltonLssDriver",""],["MotorConfig",""],["WireMoveCommand",""]],"trait":[["Clampable",""]]});

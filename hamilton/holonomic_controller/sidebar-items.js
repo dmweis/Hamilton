@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["MotorMappingFlags",""]],"struct":[["HolonomicWheelCommand",""],["MotorMapping",""]],"trait":[["Clampable",""]]});
+initSidebarItems({"struct":[["HolonomicWheelCommand",""]]});
