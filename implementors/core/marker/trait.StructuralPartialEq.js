@@ -1,3 +1,4 @@
 (function() {var implementors = {};
-implementors["hamilton"] = [{"text":"impl StructuralPartialEq for MoveCommand","synthetic":false,"types":[]},{"text":"impl StructuralPartialEq for MoveRequest","synthetic":false,"types":[]},{"text":"impl StructuralPartialEq for MoveResponse","synthetic":false,"types":[]}];
+implementors["hamilton_controller"] = [{"text":"impl StructuralPartialEq for MoveCommand","synthetic":false,"types":[]},{"text":"impl StructuralPartialEq for MoveRequest","synthetic":false,"types":[]},{"text":"impl StructuralPartialEq for MoveResponse","synthetic":false,"types":[]}];
+implementors["hamilton_guppy_controller"] = [{"text":"impl StructuralPartialEq for MoveCommand","synthetic":false,"types":[]},{"text":"impl StructuralPartialEq for MoveRequest","synthetic":false,"types":[]},{"text":"impl StructuralPartialEq for MoveResponse","synthetic":false,"types":[]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
