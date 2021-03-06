@@ -36,6 +36,15 @@
 <span id="33">33</span>
 <span id="34">34</span>
 <span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HolonomicWheelCommand</span> {
     <span class="ident">left_front</span>: <span class="ident">f32</span>,
@@ -57,6 +66,15 @@
             <span class="ident">left_rear</span>,
             <span class="ident">right_rear</span>,
         }
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_move</span>(<span class="ident">forward</span>: <span class="ident">f32</span>, <span class="ident">strafe</span>: <span class="ident">f32</span>, <span class="ident">yaw</span>: <span class="ident">f32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HolonomicWheelCommand</span> {
+        <span class="ident">HolonomicWheelCommand</span>::<span class="ident">new</span>(
+            <span class="ident">forward</span> <span class="op">-</span> <span class="ident">yaw</span> <span class="op">-</span> <span class="ident">strafe</span>,
+            <span class="ident">forward</span> <span class="op">+</span> <span class="ident">yaw</span> <span class="op">+</span> <span class="ident">strafe</span>,
+            <span class="ident">forward</span> <span class="op">-</span> <span class="ident">yaw</span> <span class="op">+</span> <span class="ident">strafe</span>,
+            <span class="ident">forward</span> <span class="op">+</span> <span class="ident">yaw</span> <span class="op">-</span> <span class="ident">strafe</span>,
+        )
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">left_front</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f32</span> {
