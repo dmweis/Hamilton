@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["driver",""],["holonomic_controller",""]]});
+initSidebarItems({"mod":[["driver",""],["holonomic_controller",""],["localiser",""],["map",""],["navigation",""],["util",""]]});
