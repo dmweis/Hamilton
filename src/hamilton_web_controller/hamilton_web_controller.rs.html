@@ -150,6 +150,7 @@
 <span id="147">147</span>
 <span id="148">148</span>
 <span id="149">149</span>
+<span id="150">150</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">anyhow</span>::<span class="prelude-ty">Result</span>;
 <span class="kw">use</span> <span class="ident">clap</span>::<span class="ident">Clap</span>;
@@ -159,7 +160,7 @@
     <span class="ident">map</span>::<span class="ident">Map</span>,
     <span class="ident">navigation</span>::{<span class="ident">NavigationController</span>, <span class="ident">Pose</span>},
 };
-<span class="kw">use</span> <span class="ident">remote_controller</span>::{<span class="ident">start_remote_controller_server_with_map</span>, <span class="ident">AreaSize</span>};
+<span class="kw">use</span> <span class="ident">remote_controller</span>::{<span class="ident">start_remote_controller_server_with_map</span>, <span class="ident">ActionList</span>, <span class="ident">AreaSize</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">net</span>::<span class="ident">SocketAddrV4</span>,
     <span class="ident">sync</span>::{
@@ -215,6 +216,7 @@
     <span class="kw">let</span> <span class="ident">controller_state</span> <span class="op">=</span> <span class="ident">start_remote_controller_server_with_map</span>(
         ([<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>], <span class="number">8080</span>),
         <span class="ident">AreaSize</span>::<span class="ident">new</span>(<span class="ident">area_width</span>, <span class="ident">area_height</span>),
+        <span class="ident">ActionList</span>::<span class="ident">default</span>(),
     );
 
     <span class="ident">spawn</span>(<span class="kw">async</span> <span class="kw">move</span> {
