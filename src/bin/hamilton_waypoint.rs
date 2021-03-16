@@ -4,7 +4,7 @@ use hamilton::{
     driver::{BodyConfig, HamiltonLssDriver},
     holonomic_controller::HolonomicWheelCommand,
     map::Map,
-    navigation::{Controller, Pose},
+    motion_controller::{Controller, Pose},
 };
 use nalgebra as na;
 use remote_controller::{start_remote_controller_server_with_map, Action, ActionList, AreaSize};
