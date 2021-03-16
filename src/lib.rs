@@ -4,4 +4,3 @@ pub mod localiser;
 pub mod map;
 pub mod motion_controller;
 pub mod navigation;
-pub mod util;
