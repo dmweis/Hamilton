@@ -22,12 +22,12 @@ impl Pose {
 }
 
 #[derive(Debug, Default)]
-pub struct NavigationController {
+pub struct Controller {
     current_pose: Option<Pose>,
     target_pose: Option<Pose>,
 }
 
-impl NavigationController {
+impl Controller {
     pub fn localized(&self) -> bool {
         self.current_pose.is_some()
     }
