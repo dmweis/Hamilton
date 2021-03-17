@@ -95,8 +95,7 @@ async fn main() -> Result<()> {
         println!("Caught interrupt\nExiting...");
     })?;
 
-    let mut localization_rx =
-        hamilton::localiser::create_localization_subscriber(args.address).await?;
+    let localization_rx = hamilton::localiser::create_localization_subscriber(args.address).await?;
 
     // this loop is getting super convoluted
     // refactor
@@ -109,7 +108,7 @@ async fn main() -> Result<()> {
             break;
         }
         if let Ok(message) = timeout(Duration::from_millis(500), localization_rx.recv()).await {
-            if let Some(message) = message {
+            if let Ok(message) = message {
                 if let Some((position, yaw)) = message.get_tracker_pose() {
                     // set start position
                     navigation_controller.update_current_pose(Pose::from_na(position, yaw));

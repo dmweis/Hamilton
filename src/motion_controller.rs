@@ -51,6 +51,17 @@ impl Controller {
     pub fn calculate_drive(&self) -> Option<HolonomicWheelCommand> {
         // maybe this should be done on `update_current_pose`
         match (&self.current_pose, &self.target_pose) {
+            (Some(current), Some(target)) => {
+                let (command, _moved) = calculate_drive_gains(current, target);
+                Some(command)
+            }
+            _ => None,
+        }
+    }
+
+    pub fn calculate_drive_or_reached(&self) -> Option<(HolonomicWheelCommand, bool)> {
+        // maybe this should be done on `update_current_pose`
+        match (&self.current_pose, &self.target_pose) {
             (Some(current), Some(target)) => Some(calculate_drive_gains(current, target)),
             _ => None,
         }
@@ -61,17 +72,23 @@ const TRANSLATION_GAIN: f32 = 10.0;
 const CLAMP: f32 = 0.5;
 const DEAD_BAND: f32 = 0.1;
 
-fn calculate_drive_gains(current: &Pose, target: &Pose) -> HolonomicWheelCommand {
+fn calculate_drive_gains(current: &Pose, target: &Pose) -> (HolonomicWheelCommand, bool) {
     let translation = current.position - target.position;
     let gain_vector = current.rotation.inverse() * translation;
+
+    let mut non_zero_field = false;
 
     let mut forward_gain = -(gain_vector.x * TRANSLATION_GAIN).clamp(-CLAMP, CLAMP);
     if forward_gain.abs() < DEAD_BAND {
         forward_gain = 0.0;
+    } else {
+        non_zero_field = true;
     }
     let mut strafe_gain = -(gain_vector.y * TRANSLATION_GAIN).clamp(-CLAMP, CLAMP);
     if strafe_gain.abs() < DEAD_BAND {
         strafe_gain = 0.0;
+    } else {
+        non_zero_field = true;
     }
     let mut yaw_gain = current
         .rotation
@@ -79,8 +96,13 @@ fn calculate_drive_gains(current: &Pose, target: &Pose) -> HolonomicWheelCommand
         .clamp(-CLAMP, CLAMP);
     if yaw_gain.abs() < DEAD_BAND {
         yaw_gain = 0.0;
+    } else {
+        non_zero_field = true;
     }
-    HolonomicWheelCommand::from_move(forward_gain, strafe_gain, yaw_gain)
+    (
+        HolonomicWheelCommand::from_move(forward_gain, strafe_gain, yaw_gain),
+        non_zero_field,
+    )
 }
 
 #[cfg(test)]

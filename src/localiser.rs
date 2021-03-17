@@ -1,4 +1,5 @@
 use anyhow::Result;
+use last_message_channel::{latest_message_channel, Receiver};
 use nalgebra as na;
 use serde::Deserialize;
 use socket2::{Domain, Protocol, Socket, Type};
@@ -6,7 +7,7 @@ use std::{
     net::{SocketAddrV4, UdpSocket as StdUdpSocket},
     str,
 };
-use tokio::{net::UdpSocket as TokioUdpSocket, sync::mpsc, task};
+use tokio::{net::UdpSocket as TokioUdpSocket, task};
 
 #[derive(Debug, Deserialize)]
 pub struct TrackedObjects {
@@ -130,8 +131,8 @@ const IP_ALL: [u8; 4] = [0, 0, 0, 0];
 
 pub async fn create_localization_subscriber(
     multi_addr: SocketAddrV4,
-) -> Result<mpsc::Receiver<TrackedObjects>> {
-    let (tx, rx) = mpsc::channel(10);
+) -> Result<Receiver<TrackedObjects>> {
+    let (tx, rx) = latest_message_channel();
     let binding_addr = SocketAddrV4::new(IP_ALL.into(), multi_addr.port());
     let socket = bind_multicast(&binding_addr, &multi_addr)?;
     let socket = TokioUdpSocket::from_std(socket)?;
@@ -144,7 +145,7 @@ pub async fn create_localization_subscriber(
             // may want to refactor this later
             if let Ok(len) = socket.recv(&mut buf).await {
                 if let Ok(tracking_data) = serde_json::from_slice::<TrackedObjects>(&buf[..len]) {
-                    if tx.send(tracking_data).await.is_err() {
+                    if tx.send(tracking_data).is_err() {
                         eprintln!("Failed to send localization over channel");
                         return;
                     }
